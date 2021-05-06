@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     android:id="@+id/content_friends">
 
+    <Button
+        android:id="@+id/button_add_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Добавить"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ListView
         android:id="@+id/list_view_friends"
         android:layout_width="match_parent"

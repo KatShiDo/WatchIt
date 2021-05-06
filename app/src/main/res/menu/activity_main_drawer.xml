@@ -7,18 +7,22 @@
         <item
             android:id="@+id/nav_account"
             android:icon="@drawable/ic_account"
-            android:title="@string/menu_account" />
+            android:title="@string/menu_account"
+            android:checked="true" />
         <item
             android:id="@+id/nav_friends"
             android:icon="@drawable/ic_friends"
-            android:title="@string/menu_friends" />
+            android:title="@string/menu_friends"
+            android:enabled="false"/>
         <item
             android:id="@+id/nav_unwatched"
             android:icon="@drawable/ic_unwatched"
-            android:title="@string/menu_unwatched" />
+            android:title="@string/menu_unwatched"
+            android:enabled="false"/>
         <item
             android:id="@+id/nav_watched"
             android:icon="@drawable/ic_watched"
-            android:title="@string/menu_watched" />
+            android:title="@string/menu_watched"
+            android:enabled="false"/>
     </group>
 </menu>

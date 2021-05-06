@@ -24,17 +24,32 @@ public class Parser
     private static Thread secThread;
     private static Runnable runnable;
     private static Document doc;
-    private static String url_initted;
+    private static String[] url_initted_list = new String[0];
+    private static Document[] document_initted_list = new Document[0];
 
     private static void getWeb(String url) throws IOException
     {
-        if (!url.equals(url_initted))
+        boolean flag = false;
+        for (int i = 0; i < url_initted_list.length; i++)
+        {
+            if (url.equals(url_initted_list[i]))
+            {
+                flag = true;
+                doc = document_initted_list[i];
+                break;
+            }
+        }
+        if (!flag)
         {
             doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36 RuxitSynthetic/1.0 v9966304240 t38550 ath9b965f92 altpub cvcv=2")
                     .referrer("http://www.google.com")
                     .get();
-            url_initted = url;
+            url_initted_list = Arrays.copyOf(url_initted_list, url_initted_list.length + 1);
+            url_initted_list[url_initted_list.length - 1] = url;
+
+            document_initted_list = Arrays.copyOf(document_initted_list, document_initted_list.length + 1);
+            document_initted_list[document_initted_list.length - 1] = doc;
         }
     }
 

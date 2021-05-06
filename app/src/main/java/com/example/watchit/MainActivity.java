@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
@@ -41,9 +44,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView navigationView;
-    private User user;
+    public static User user;
 
     private MyAdapter adapter;
+
+    private Button button_add_unwatched, button_add_watched, button_add_friend;
 
     private void disableAll()
     {
@@ -51,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         findViewById(R.id.content_friends).setVisibility(View.INVISIBLE);
         findViewById(R.id.content_unwatched).setVisibility(View.INVISIBLE);
         findViewById(R.id.content_watched).setVisibility(View.INVISIBLE);
+        findViewById(R.id.content_registration).setVisibility(View.INVISIBLE);
+        findViewById(R.id.choose_avatar).setVisibility(View.INVISIBLE);
     }
 
     private void enable(int id)
@@ -78,6 +85,150 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ImageView iconImageView = row.findViewById(R.id.item_image);
             iconImageView.setImageBitmap(bitmap_list[position]);
             return row;
+
+        }
+    }
+
+    private void update_avatar(){
+        DataBase db = null;
+        try {
+            db = new DataBase();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assert db != null;
+        try {
+            db.set_user_avatar(user.getNickname(), user.getAvatar());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        ImageView image_view_avatar;
+        image_view_avatar = findViewById(R.id.image_view_avatar);
+        image_view_avatar.setImageBitmap(user.getAvatar());
+        disableAll();
+        enable(R.id.content_account);
+    }
+
+    private void set_avatar() {
+        disableAll();
+        enable(R.id.choose_avatar);
+        drawer.closeDrawer(GravityCompat.START);
+        ImageView av1, av2, av3, av4, av5, av6, av7, av8, av9, av10, av11, av12, av13, av14, av15, av16;
+        av1 = findViewById(R.id.avatar_1);
+        av2 = findViewById(R.id.avatar_2);
+        av3 = findViewById(R.id.avatar_3);
+        av4 = findViewById(R.id.avatar_4);
+        av5 = findViewById(R.id.avatar_5);
+        av6 = findViewById(R.id.avatar_6);
+        av7 = findViewById(R.id.avatar_7);
+        av8 = findViewById(R.id.avatar_8);
+        av9 = findViewById(R.id.avatar_9);
+        av10 = findViewById(R.id.avatar_10);
+        av11 = findViewById(R.id.avatar_11);
+        av12 = findViewById(R.id.avatar_12);
+        av13 = findViewById(R.id.avatar_13);
+        av14 = findViewById(R.id.avatar_14);
+        av15 = findViewById(R.id.avatar_15);
+        av16 = findViewById(R.id.avatar_16);
+
+        av1.setOnClickListener(v ->
+        {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av1));
+            update_avatar();
+        });
+        av2.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av2));
+            update_avatar();
+        });
+        av3.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av3));
+            update_avatar();
+        });
+        av4.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av4));
+            update_avatar();
+        });
+        av5.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av5));
+            update_avatar();
+        });
+        av6.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av6));
+            update_avatar();
+        });
+        av7.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av7));
+            update_avatar();
+        });
+        av8.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av8));
+            update_avatar();
+        });
+        av9.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av9));
+            update_avatar();
+        });
+        av10.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av10));
+            update_avatar();
+        });
+        av11.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av11));
+            update_avatar();
+        });
+        av12.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av12));
+            update_avatar();
+        });
+        av13.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av13));
+            update_avatar();
+        });
+        av14.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av14));
+            update_avatar();
+        });
+        av15.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av15));
+            update_avatar();
+        });
+        av16.setOnClickListener(v -> {
+            user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av16));
+            update_avatar();
+        });
+
+
+    }
+
+    private class RegistrationContent
+    {
+        private Button button_registration_confirm;
+        private EditText edit_text_registration_nickname, edit_text_registration_password;
+        @SuppressLint("ShowToast")
+        public RegistrationContent()
+        {
+            disableAll();
+            enable(R.id.content_registration);
+            button_registration_confirm = findViewById(R.id.button_registration_confirm);
+            edit_text_registration_nickname = findViewById(R.id.edit_text_registration_nickname);
+            edit_text_registration_password = findViewById(R.id.edit_text_registration_password);
+
+            button_registration_confirm.setOnClickListener(v -> {
+                try {
+                    DataBase db = new DataBase();
+                    if (!db.add_user(edit_text_registration_nickname.getText().toString(), edit_text_registration_password.getText().toString()))
+                    {
+                        Toast.makeText(getApplicationContext(), "Этот никнейм занят", Toast.LENGTH_LONG);
+                    }
+                    else
+                    {
+                        disableAll();
+                        enable(R.id.content_account);
+                    }
+                } catch (InterruptedException | SQLException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -89,15 +240,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public AccountContent()
         {
             Button button_login = findViewById(R.id.button_login);
+            Button button_start_registration = findViewById(R.id.button_start_registration);
             edit_text_login = findViewById(R.id.edit_text_login);
             edit_text_password = findViewById(R.id.edit_text_password);
             button_login.setOnClickListener(v ->
             {
-                DataBase db = null;
+                DataBase db;
                 try {
                     db = new DataBase();
                     user = db.login_user(edit_text_login.getText().toString(), edit_text_password.getText().toString(), MainActivity.this);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | SQLException e) {
                     e.printStackTrace();
                 }
                 if (user != null)
@@ -105,9 +257,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     formLists();
                     Toast.makeText(getApplicationContext(), "Успешный вход", Toast.LENGTH_SHORT);
                     button_login.setEnabled(false);
+                    button_start_registration.setEnabled(false);
                     edit_text_login.setEnabled(false);
                     edit_text_password.setEnabled(false);
+                    TextView text_view_nickname;
+                    text_view_nickname = findViewById(R.id.text_view_nickname);
+                    text_view_nickname.setText(user.getNickname());
+                    ImageView image_view_avatar;
+                    image_view_avatar = findViewById(R.id.image_view_avatar);
+                    image_view_avatar.setImageBitmap(user.getAvatar());
+
+                    image_view_avatar.setOnClickListener(v1 -> set_avatar());
+
+                    navigationView.getMenu().findItem(R.id.nav_friends).setEnabled(true);
+                    navigationView.getMenu().findItem(R.id.nav_unwatched).setEnabled(true);
+                    navigationView.getMenu().findItem(R.id.nav_watched).setEnabled(true);
                 }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Неверный логин или пароль", Toast.LENGTH_SHORT);
+                }
+            });
+
+            button_start_registration.setOnClickListener(v -> {
+                new RegistrationContent();
             });
 
             list_view_unwatched = findViewById(R.id.list_view_unwatched);
@@ -166,12 +339,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             adapter = new MyAdapter(getApplicationContext(), R.layout.list_item, list_watched, list_watched_images);
             list_view_watched.setAdapter(adapter);
-            list_view_watched.setOnItemClickListener((parent, view, position, id) ->
+            try {
+                list_view_watched.setOnItemClickListener((parent, view, position, id) ->
+                {
+                    Intent intent = new Intent(MainActivity.this, TitleActivity.class);
+                    intent.putExtra("title", user.getWatched()[position]);
+                    startActivity(intent);
+                });
+            }
+            catch (Exception e)
             {
-                Intent intent = new Intent(MainActivity.this, TitleActivity.class);
-                intent.putExtra("title", user.getWatched()[position]);
-                startActivity(intent);
-            });
+                e.printStackTrace();
+            }
         }
 
         private void formFriends()
@@ -189,14 +368,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             adapter = new MyAdapter(getApplicationContext(), R.layout.list_item, list_friends, list_friends_images);
             list_view_friends.setAdapter(adapter);
-            list_view_friends.setOnItemClickListener((parent, view, position, id) ->
+            try {
+                list_view_friends.setOnItemClickListener((parent, view, position, id) ->
+                {
+                    Intent intent = new Intent(MainActivity.this, FriendActivity.class);
+                    intent.putExtra("friend", (Parcelable) user.getFriends()[position]);
+                    startActivity(intent);
+                });
+            }
+            catch (Exception e)
             {
-                Intent intent = new Intent(MainActivity.this, FriendActivity.class);
-                intent.putExtra("friend", (Parcelable) user.getFriends()[position]);
-                startActivity(intent);
-            });
+                e.printStackTrace();
+            }
         }
     }
+
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            assert data != null;
+            user = data.getParcelableExtra("user");
+        }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -217,8 +411,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         new AccountContent();
-
+        disableAll();
         enable(R.id.content_account);
+
+        button_add_unwatched = findViewById(R.id.button_add_unwatched);
+        button_add_watched = findViewById(R.id.button_add_watched);
+        button_add_friend = findViewById(R.id.button_add_friend);
+
+        button_add_unwatched.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddTitleActivity.class);
+            intent.putExtra("category", 0);
+            startActivity(intent);
+        });
+
+        button_add_watched.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddTitleActivity.class);
+            intent.putExtra("category", 1);
+            startActivity(intent);
+        });
+
+        button_add_friend.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddFriendActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override

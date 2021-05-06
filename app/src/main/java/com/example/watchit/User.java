@@ -7,6 +7,7 @@ import android.os.Parcelable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class User implements Parcelable, Serializable
 {
@@ -23,29 +24,6 @@ public class User implements Parcelable, Serializable
         this.Unwatched = Unwatched;
     }
 
-    /*protected User(Parcel in) {
-        nickname = in.readString();
-        byte[] byte_array = new byte[0];
-        in.readByteArray(byte_array);
-        avatar = BitmapFactory.decodeByteArray(byte_array, 0, byte_array.length);
-        //Friends = in.createTypedArray(User.CREATOR);
-        Friends = (User[]) in.readParcelableArray(User.class.getClassLoader());
-        Unwatched = (Title[]) in.readParcelableArray(Title.class.getClassLoader());
-        Watched = (Title[]) in.readParcelableArray(Title.class.getClassLoader());
-    }*/
-
-    /*public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };*/
-
     protected User(Parcel in) {
         nickname = in.readString();
         avatar = in.readParcelable(Bitmap.class.getClassLoader());
@@ -57,10 +35,29 @@ public class User implements Parcelable, Serializable
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(nickname);
-        dest.writeParcelable(avatar, flags);
+        Bitmap avatar_compressed = BitmapCompressor.compressBitmap(avatar, 150);
+        dest.writeParcelable(avatar_compressed, flags);
         dest.writeTypedArray(Friends, flags);
         dest.writeTypedArray(Unwatched, flags);
         dest.writeTypedArray(Watched, flags);
+    }
+
+    public void addUnwatched(Title title)
+    {
+        this.Unwatched = Arrays.copyOf(this.Unwatched, this.Unwatched.length + 1);
+        this.Unwatched[this.Unwatched.length - 1] = title;
+    }
+
+    public void addWatched(Title title)
+    {
+        this.Watched = Arrays.copyOf(this.Watched, this.Watched.length + 1);
+        this.Watched[this.Watched.length - 1] = title;
+    }
+
+    public void addFriend(User user)
+    {
+        this.Friends = Arrays.copyOf(this.Friends, this.Friends.length + 1);
+        this.Friends[this.Friends.length - 1] = user;
     }
 
     @Override
@@ -105,19 +102,8 @@ public class User implements Parcelable, Serializable
         return this.avatar;
     }
 
-    /*@Override
-    public int describeContents() {
-        return 0;
-    }*/
-
-    /*@Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(nickname);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        avatar.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        dest.writeByteArray(stream.toByteArray());
-        dest.writeSerializable(Friends);
-        dest.writeSerializable(Unwatched);
-        dest.writeSerializable(Watched);
-    }*/
+    public void setAvatar(Bitmap avatar)
+    {
+        this.avatar = avatar;
+    }
 }

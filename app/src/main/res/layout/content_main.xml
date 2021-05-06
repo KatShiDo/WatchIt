@@ -11,5 +11,7 @@
     <include layout = "@layout/content_friends"/>
     <include layout = "@layout/content_unwatched"/>
     <include layout = "@layout/content_watched"/>
+    <include layout = "@layout/content_registration"/>
+    <include layout = "@layout/choose_avatar"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

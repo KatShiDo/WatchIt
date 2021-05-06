@@ -5,9 +5,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.SocketException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,6 +24,7 @@ public class DataBase
 {
     private Connection con;
     private Statement st;
+    private PreparedStatement st_prep;
 
     public DataBase() throws InterruptedException {
         Thread db_con = new Thread(new DBConnection());
@@ -25,12 +32,13 @@ public class DataBase
         db_con.join();
     }
 
-    private User form_user(String nickname, boolean isFriend, Context context) throws InterruptedException {
+    public User form_user(String nickname, boolean isFriend, Context context) throws InterruptedException, SQLException {
+        st = con.createStatement();
         User[] user = {null};
         Thread user_form = new Thread(() -> {
             try
             {
-                ResultSet rs = null;
+                ResultSet rs;
                 Title[] titles_unwatched = new Title[0];
                 Title[] titles_watched = new Title[0];
                 rs = st.executeQuery("SELECT t.title_url, t.title_watched FROM AppUser a " +
@@ -58,9 +66,12 @@ public class DataBase
                         "WHERE user_nickname = '" + nickname + "'");
                 rs.next();
                 Bitmap avatar;
-                if (rs.getBlob("user_avatar") != null)
+                if (rs.getBytes("user_avatar") != null)
                 {
-                    avatar = BitmapFactory.decodeStream(rs.getBlob("user_avatar").getBinaryStream());
+                    //Blob blob = rs.getBlob("user_avatar");
+                    //byte[] bArray = blob.getBytes(1L, (int)blob.length());
+                    byte[] bArray = rs.getBytes("user_avatar");
+                    avatar = BitmapFactory.decodeByteArray(bArray, 0, bArray.length);
                 }
                 else
                 {
@@ -95,10 +106,13 @@ public class DataBase
         user_form.start();
         user_form.join();
 
+        st.close();
+
         return user[0];
     }
 
-    public User login_user(String nickname, String password, Context context) throws InterruptedException {
+    public User login_user(String nickname, String password, Context context) throws InterruptedException, SQLException {
+        st = con.createStatement();
         final User[] user = {null};
         Thread user_log = new Thread(() -> {
             try
@@ -120,6 +134,8 @@ public class DataBase
         user_log.start();
         user_log.join();
 
+        st.close();
+
         return user[0];
     }
 
@@ -130,9 +146,11 @@ public class DataBase
         {
             final String MSSQL_DB = "jdbc:jtds:sqlserver://katshido.database.windows.net:1433;databaseName=MS_BD;" +
                     "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;" +
-                    "loginTimeout=30;Authentication=ActiveDirectoryIntegrated";
+                    "loginTimeout=30;Authentication=ActiveDirectoryIntegrated;testOnBorrow=true;validationQuery=\"select 1\"";
             final String MSSQL_LOGIN = "KatShiDo@katshido";
-            final String MSSQL_PASS= "20030117ybrbnF";
+            final String MSSQL_PASS = "fv7sHEJ9hcs";
+            //final String MSSQL_PASS = "20030117ybrbnF";
+            //final String MSSQL_PASS = "j6QuwLjG8LDy";
 
             try
             {
@@ -141,7 +159,6 @@ public class DataBase
                 try
                 {
                     con = DriverManager.getConnection(MSSQL_DB, MSSQL_LOGIN, MSSQL_PASS);
-                    st = con.createStatement();
                 }
                 catch (SQLException e)
                 {
@@ -152,6 +169,131 @@ public class DataBase
             {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void add_friend(String nickname, User user) throws SQLException {
+        st = con.createStatement();
+        new Thread(() -> {
+            try {
+                st.executeUpdate("INSERT INTO Relationship (user_1, user_2) " +
+                        "VALUES ('" + user.getNickname() + "', '" + nickname + "')");
+                st.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void add_title(String url, boolean isWatched, User user) throws SQLException {
+        st = con.createStatement();
+        new Thread(() -> {
+            try {
+                st.executeUpdate("INSERT INTO Title (title_url, title_watched, user_nickname) " +
+                        "VALUES ('" + url + "', '" + isWatched + "', '" + user.getNickname() + "')");
+                st.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }).start();
+    }
+
+    public boolean add_user(String nickname, String password) throws InterruptedException, SQLException {
+        st = con.createStatement();
+        boolean[] flag = {true};
+        Thread thread_add_user = new Thread(() -> {
+            try {
+                ResultSet rs = st.executeQuery("SELECT * FROM AppUser " +
+                        "WHERE user_nickname = '" + nickname + "'");
+                if (rs.next())
+                {
+                    flag[0] = false;
+                }
+                else
+                {
+                    st.executeUpdate("INSERT INTO AppUser (user_nickname, user_password) " +
+                            "VALUES ('" + nickname + "', '" + password + "')");
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        });
+        thread_add_user.start();
+        thread_add_user.join();
+
+        st.close();
+
+        return flag[0];
+    }
+
+    public void set_user_avatar(String nickname, Bitmap avatar) throws SQLException
+    {
+        st = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        Thread set_avatar = new Thread(() -> {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            avatar.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            byte[] bArray = bos.toByteArray();
+            try {
+                /*
+                PreparedStatement statement = con.prepareStatement("UPDATE AppUser SET user_avatar = ? " +
+                        "WHERE user_nickname = '" + nickname + "'");
+                //OutputStream outputStream = blob.setBinaryStream(1);
+                //outputStream.write(bArray);
+                statement.setBinaryStream(1, new ByteArrayInputStream(bArray));//, bArray.length);//, bArray.length);
+                //statement.setBlob(1, blob);
+                statement.executeUpdate();
+                statement.close();
+                //st = con.createStatement();*/
+                ResultSet rs = st.executeQuery("SELECT * FROM AppUser");
+                rs.next();
+                while (!rs.getString("user_nickname").equals(nickname))
+                {
+                    rs.next();
+                }
+                rs.updateBytes("user_avatar", bArray);
+                rs.updateRow();
+            } catch (SQLException throwables) {
+                /*if (throwables.getCause() instanceof SocketException)
+                {
+                    try {
+                        con.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Thread thread1 = new Thread(() -> {
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    thread1.start();
+                    try {
+                        thread1.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Thread thread = new Thread(new DBConnection());
+                    thread.start();
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        set_user_avatar(nickname, avatar);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }*/
+                throwables.printStackTrace();
+            }
+        });
+        set_avatar.start();
+        try {
+            set_avatar.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

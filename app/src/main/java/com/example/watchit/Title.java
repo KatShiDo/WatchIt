@@ -88,7 +88,13 @@ public class Title implements Parcelable
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(image, flags);
+        Bitmap image_compressed = BitmapCompressor.compressBitmap(image, 150);
+        /*int width = image.getWidth();
+        int height = image.getHeight();
+        int halfWidth = width / 2;
+        int halfHeight = height / 2;
+        image = Bitmap.createScaledBitmap(image, halfWidth, halfHeight, false);*/
+        dest.writeParcelable(image_compressed, flags);
         dest.writeString(caption);
         dest.writeString(description);
         dest.writeString(year);
