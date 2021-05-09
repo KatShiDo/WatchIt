@@ -18,7 +18,7 @@ public class BitmapCompressor {
         }
         else
         {
-            return bitmap;
+            return null;
         }
     }
 }

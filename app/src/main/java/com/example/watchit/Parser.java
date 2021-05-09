@@ -96,7 +96,7 @@ public class Parser
             StringBuilder title_genre_string = new StringBuilder();
             for (Element genre : title_genre)
             {
-                title_genre_string.append(genre.text());
+                title_genre_string.append(genre.text()).append(" ");
             }
             data.put("Ссылка", url);
             data.put("Название", title_caption.text());

@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void update_avatar(){
+    private void update_avatar(int avatar_index){
         DataBase db = null;
         try {
             db = new DataBase();
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         assert db != null;
         try {
-            db.set_user_avatar(user.getNickname(), user.getAvatar());
+            db.set_user_avatar(user.getNickname(), avatar_index);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -134,67 +134,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         av1.setOnClickListener(v ->
         {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av1));
-            update_avatar();
+            update_avatar(1);
         });
         av2.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av2));
-            update_avatar();
+            update_avatar(2);
         });
         av3.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av3));
-            update_avatar();
+            update_avatar(3);
         });
         av4.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av4));
-            update_avatar();
+            update_avatar(4);
         });
         av5.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av5));
-            update_avatar();
+            update_avatar(5);
         });
         av6.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av6));
-            update_avatar();
+            update_avatar(6);
         });
         av7.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av7));
-            update_avatar();
+            update_avatar(7);
         });
         av8.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av8));
-            update_avatar();
+            update_avatar(8);
         });
         av9.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av9));
-            update_avatar();
+            update_avatar(9);
         });
         av10.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av10));
-            update_avatar();
+            update_avatar(10);
         });
         av11.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av11));
-            update_avatar();
+            update_avatar(11);
         });
         av12.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av12));
-            update_avatar();
+            update_avatar(12);
         });
         av13.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av13));
-            update_avatar();
+            update_avatar(13);
         });
         av14.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av14));
-            update_avatar();
+            update_avatar(14);
         });
         av15.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av15));
-            update_avatar();
+            update_avatar(15);
         });
         av16.setOnClickListener(v -> {
             user.setAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.av16));
-            update_avatar();
+            update_avatar(16);
         });
 
 

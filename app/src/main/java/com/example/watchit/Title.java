@@ -63,7 +63,7 @@ public class Title implements Parcelable
 
     public String getYear()
     {
-        return this.description;
+        return this.year;
     }
 
     public String getGenre()

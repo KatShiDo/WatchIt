@@ -62,29 +62,70 @@ public class DataBase
                         j++;
                     }
                 }
-                rs = st.executeQuery("SELECT user_avatar FROM AppUser " +
+                rs = st.executeQuery("SELECT user_avatar_index FROM AppUser " +
                         "WHERE user_nickname = '" + nickname + "'");
                 rs.next();
                 Bitmap avatar;
-                if (rs.getBytes("user_avatar") != null)
+                switch (rs.getInt("user_avatar_index"))
                 {
-                    //Blob blob = rs.getBlob("user_avatar");
-                    //byte[] bArray = blob.getBytes(1L, (int)blob.length());
-                    byte[] bArray = rs.getBytes("user_avatar");
-                    avatar = BitmapFactory.decodeByteArray(bArray, 0, bArray.length);
-                }
-                else
-                {
-                    avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.user);
+                    case 0:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.user);
+                        break;
+                    case 1:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av1);
+                        break;
+                    case 2:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av2);
+                        break;
+                    case 3:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av3);
+                        break;
+                    case 4:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av4);
+                        break;
+                    case 5:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av5);
+                        break;
+                    case 6:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av6);
+                        break;
+                    case 7:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av7);
+                        break;
+                    case 8:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av8);
+                        break;
+                    case 9:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av9);
+                        break;
+                    case 10:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av10);
+                        break;
+                    case 11:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av11);
+                        break;
+                    case 12:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av12);
+                        break;
+                    case 13:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av13);
+                        break;
+                    case 14:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av14);
+                        break;
+                    case 15:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av15);
+                        break;
+                    case 16:
+                        avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.av16);
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + rs.getInt("user_avatar_index"));
                 }
                 User[] friends = null;
                 if (!isFriend)
                 {
                     friends = new User[0];
-                    /*rs = st.executeQuery("SELECT a.user_nickname FROM Relationship r " +
-                            "JOIN AppUser a " +
-                            "ON r.user_2 = a.user_nickname " +
-                            "WHERE r.user_1 = '" + nickname + "'");*/
                     Statement st_friends = con.createStatement();
                     ResultSet rs_friends = st_friends.executeQuery("SELECT user_2 FROM Relationship r " +
                             "WHERE r.user_1 = '" + nickname + "'");
@@ -149,8 +190,6 @@ public class DataBase
                     "loginTimeout=30;Authentication=ActiveDirectoryIntegrated;testOnBorrow=true;validationQuery=\"select 1\"";
             final String MSSQL_LOGIN = "KatShiDo@katshido";
             final String MSSQL_PASS = "fv7sHEJ9hcs";
-            //final String MSSQL_PASS = "20030117ybrbnF";
-            //final String MSSQL_PASS = "j6QuwLjG8LDy";
 
             try
             {
@@ -226,24 +265,20 @@ public class DataBase
         return flag[0];
     }
 
-    public void set_user_avatar(String nickname, Bitmap avatar) throws SQLException
+    public void set_user_avatar(String nickname, int avatar_index) throws SQLException
     {
-        st = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        Thread set_avatar = new Thread(() -> {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            avatar.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            byte[] bArray = bos.toByteArray();
+        st = con.createStatement();
+        new Thread(() -> {
             try {
-                /*
-                PreparedStatement statement = con.prepareStatement("UPDATE AppUser SET user_avatar = ? " +
+                st.executeUpdate("UPDATE AppUser SET user_avatar_index = '" + avatar_index + "' " +
                         "WHERE user_nickname = '" + nickname + "'");
-                //OutputStream outputStream = blob.setBinaryStream(1);
+                /*//OutputStream outputStream = blob.setBinaryStream(1);
                 //outputStream.write(bArray);
                 statement.setBinaryStream(1, new ByteArrayInputStream(bArray));//, bArray.length);//, bArray.length);
                 //statement.setBlob(1, blob);
                 statement.executeUpdate();
                 statement.close();
-                //st = con.createStatement();*/
+                //st = con.createStatement();
                 ResultSet rs = st.executeQuery("SELECT * FROM AppUser");
                 rs.next();
                 while (!rs.getString("user_nickname").equals(nickname))
@@ -251,7 +286,7 @@ public class DataBase
                     rs.next();
                 }
                 rs.updateBytes("user_avatar", bArray);
-                rs.updateRow();
+                rs.updateRow();*/
             } catch (SQLException throwables) {
                 /*if (throwables.getCause() instanceof SocketException)
                 {
@@ -288,12 +323,6 @@ public class DataBase
                 }*/
                 throwables.printStackTrace();
             }
-        });
-        set_avatar.start();
-        try {
-            set_avatar.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 }
