@@ -24,7 +24,6 @@ public class DataBase
 {
     private Connection con;
     private Statement st;
-    private PreparedStatement st_prep;
 
     public DataBase() throws InterruptedException {
         Thread db_con = new Thread(new DBConnection());
@@ -272,55 +271,7 @@ public class DataBase
             try {
                 st.executeUpdate("UPDATE AppUser SET user_avatar_index = '" + avatar_index + "' " +
                         "WHERE user_nickname = '" + nickname + "'");
-                /*//OutputStream outputStream = blob.setBinaryStream(1);
-                //outputStream.write(bArray);
-                statement.setBinaryStream(1, new ByteArrayInputStream(bArray));//, bArray.length);//, bArray.length);
-                //statement.setBlob(1, blob);
-                statement.executeUpdate();
-                statement.close();
-                //st = con.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM AppUser");
-                rs.next();
-                while (!rs.getString("user_nickname").equals(nickname))
-                {
-                    rs.next();
-                }
-                rs.updateBytes("user_avatar", bArray);
-                rs.updateRow();*/
             } catch (SQLException throwables) {
-                /*if (throwables.getCause() instanceof SocketException)
-                {
-                    try {
-                        con.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                    Thread thread1 = new Thread(() -> {
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    thread1.start();
-                    try {
-                        thread1.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Thread thread = new Thread(new DBConnection());
-                    thread.start();
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        set_user_avatar(nickname, avatar);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }*/
                 throwables.printStackTrace();
             }
         }).start();
