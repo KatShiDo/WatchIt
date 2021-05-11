@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="logo_activity_color">#3999ED</color>
     <color name="logo_activity_color_button">#9530B1</color>
+    <color name="logo_main">#00A2E8</color>
 </resources>

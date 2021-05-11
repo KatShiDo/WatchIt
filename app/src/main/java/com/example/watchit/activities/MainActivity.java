@@ -1,20 +1,13 @@
-package com.example.watchit;
+package com.example.watchit.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,28 +23,30 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.watchit.network.DataBase;
+import com.example.watchit.R;
+import com.example.watchit.User;
+import com.example.watchit.utils.CustomArrayAdapter;
+import com.example.watchit.utils.ListItemClass;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView navigationView;
     public static User user;
 
-    private MyAdapter adapter;
+    private CustomArrayAdapter adapter;
 
     private Button button_add_unwatched, button_add_watched, button_add_friend;
 
-    private void disableAll()
-    {
+    private void notify_user_changed() {
+        new AccountContent().formLists();
+    }
+
+    private void disableAll() {
         findViewById(R.id.content_account).setVisibility(View.INVISIBLE);
         findViewById(R.id.content_friends).setVisibility(View.INVISIBLE);
         findViewById(R.id.content_unwatched).setVisibility(View.INVISIBLE);
@@ -63,30 +58,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void enable(int id)
     {
         findViewById(id).setVisibility(View.VISIBLE);
-    }
-
-    private class MyAdapter extends ArrayAdapter<String>
-    {
-        public String[] text_list;
-        public Bitmap[] bitmap_list;
-
-        public MyAdapter(Context context, int textViewResourceId, String[] objects, Bitmap[] images)
-        {
-            super(context, textViewResourceId, objects);
-            text_list = objects;
-            bitmap_list = images;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = getLayoutInflater();
-            @SuppressLint("ViewHolder") View row = inflater.inflate(R.layout.list_item, parent, false);
-            TextView label = row.findViewById(R.id.item_text);
-            label.setText(text_list[position]);
-            ImageView iconImageView = row.findViewById(R.id.item_image);
-            iconImageView.setImageBitmap(bitmap_list[position]);
-            return row;
-
-        }
     }
 
     private void update_avatar(int avatar_index){
@@ -200,51 +171,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private class RegistrationContent
-    {
-        private Button button_registration_confirm;
-        private EditText edit_text_registration_nickname, edit_text_registration_password;
-        @SuppressLint("ShowToast")
-        public RegistrationContent()
-        {
-            disableAll();
-            enable(R.id.content_registration);
-            button_registration_confirm = findViewById(R.id.button_registration_confirm);
-            edit_text_registration_nickname = findViewById(R.id.edit_text_registration_nickname);
-            edit_text_registration_password = findViewById(R.id.edit_text_registration_password);
+    private class AccountContent {
 
-            button_registration_confirm.setOnClickListener(v -> {
-                try {
-                    DataBase db = new DataBase();
-                    if (!db.add_user(edit_text_registration_nickname.getText().toString(), edit_text_registration_password.getText().toString()))
-                    {
-                        Toast.makeText(getApplicationContext(), "Этот никнейм занят", Toast.LENGTH_LONG);
-                    }
-                    else
-                    {
-                        disableAll();
-                        enable(R.id.content_account);
-                    }
-                } catch (InterruptedException | SQLException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-    }
+        private EditText edit_text_login = findViewById(R.id.edit_text_login);
+        private EditText edit_text_password = findViewById(R.id.edit_text_password);
+        private ListView list_view_unwatched = findViewById(R.id.list_view_unwatched);
+        private ListView list_view_watched = findViewById(R.id.list_view_watched);
+        private ListView list_view_friends = findViewById(R.id.list_view_friends);
 
-    private class AccountContent
-    {
-        private EditText edit_text_login, edit_text_password;
-        private ListView list_view_unwatched, list_view_watched, list_view_friends;
         @SuppressLint("ShowToast")
-        public AccountContent()
-        {
+        public void execute() {
+
             Button button_login = findViewById(R.id.button_login);
             Button button_start_registration = findViewById(R.id.button_start_registration);
-            edit_text_login = findViewById(R.id.edit_text_login);
-            edit_text_password = findViewById(R.id.edit_text_password);
-            button_login.setOnClickListener(v ->
-            {
+
+            button_login.setOnClickListener(v -> {
                 DataBase db;
                 try {
                     db = new DataBase();
@@ -252,10 +193,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } catch (InterruptedException | SQLException e) {
                     e.printStackTrace();
                 }
-                if (user != null)
-                {
+                if (user != null) {
                     formLists();
-                    Toast.makeText(getApplicationContext(), "Успешный вход", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "Успешный вход", Toast.LENGTH_LONG);
                     button_login.setEnabled(false);
                     button_start_registration.setEnabled(false);
                     edit_text_login.setEnabled(false);
@@ -273,128 +213,98 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navigationView.getMenu().findItem(R.id.nav_unwatched).setEnabled(true);
                     navigationView.getMenu().findItem(R.id.nav_watched).setEnabled(true);
                 }
-                else
-                {
+                else {
                     Toast.makeText(getApplicationContext(), "Неверный логин или пароль", Toast.LENGTH_SHORT);
                 }
             });
 
             button_start_registration.setOnClickListener(v -> {
-                new RegistrationContent();
+                RegistrationContent();
             });
-
-            list_view_unwatched = findViewById(R.id.list_view_unwatched);
-            list_view_watched = findViewById(R.id.list_view_watched);
-            list_view_friends = findViewById(R.id.list_view_friends);
         }
 
-        private void formLists()
-        {
+        public void formLists() {
             formUnwatched();
             formWatched();
             formFriends();
         }
 
-        private void formUnwatched()
-        {
-            String[] list_unwatched = new String[0];
-            Bitmap[] list_unwatched_images = new Bitmap[0];
-            int i = 0;
-            for (Title title:user.getUnwatched())
-            {
-                list_unwatched = Arrays.copyOf(list_unwatched, list_unwatched.length + 1);
-                list_unwatched[i] = title.getCaption();
-                list_unwatched_images = Arrays.copyOf(list_unwatched_images, list_unwatched_images.length + 1);
-                list_unwatched_images[i] = title.getImage();
-                i++;
-            }
-            adapter = new MyAdapter(getApplicationContext(), R.layout.list_item, list_unwatched, list_unwatched_images);
+        private void formUnwatched() {
+            adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.list_item, ListItemClass.createListItemClass(user.getUnwatched()), getLayoutInflater());
             list_view_unwatched.setAdapter(adapter);
             try {
-                list_view_unwatched.setOnItemClickListener((parent, view, position, id) ->
-                {
+                list_view_unwatched.setOnItemClickListener((parent, view, position, id) -> {
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getUnwatched()[position]);
                     startActivity(intent);
                 });
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        private void formWatched()
-        {
-            String[] list_watched = new String[0];
-            Bitmap[] list_watched_images = new Bitmap[0];
-            int i = 0;
-            for (Title title:user.getWatched())
-            {
-                list_watched = Arrays.copyOf(list_watched, list_watched.length + 1);
-                list_watched[i] = title.getCaption();
-                list_watched_images = Arrays.copyOf(list_watched_images, list_watched_images.length + 1);
-                list_watched_images[i] = title.getImage();
-                i++;
-            }
-            adapter = new MyAdapter(getApplicationContext(), R.layout.list_item, list_watched, list_watched_images);
+        private void formWatched() {
+            adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.list_item, ListItemClass.createListItemClass(user.getWatched()), getLayoutInflater());
             list_view_watched.setAdapter(adapter);
             try {
-                list_view_watched.setOnItemClickListener((parent, view, position, id) ->
-                {
+                list_view_watched.setOnItemClickListener((parent, view, position, id) -> {
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getWatched()[position]);
                     startActivity(intent);
                 });
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        private void formFriends()
-        {
-            String[] list_friends = new String[0];
-            Bitmap[] list_friends_images = new Bitmap[0];
-            int i = 0;
-            for (User user:user.getFriends())
-            {
-                list_friends = Arrays.copyOf(list_friends, list_friends.length + 1);
-                list_friends[i] = user.getNickname();
-                list_friends_images = Arrays.copyOf(list_friends_images, list_friends_images.length + 1);
-                list_friends_images[i] = user.getAvatar();
-                i++;
-            }
-            adapter = new MyAdapter(getApplicationContext(), R.layout.list_item, list_friends, list_friends_images);
+        private void formFriends() {
+            adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.list_item, ListItemClass.createListItemClass(user.getFriends()), getLayoutInflater());
             list_view_friends.setAdapter(adapter);
             try {
-                list_view_friends.setOnItemClickListener((parent, view, position, id) ->
-                {
+                list_view_friends.setOnItemClickListener((parent, view, position, id) -> {
                     Intent intent = new Intent(MainActivity.this, FriendActivity.class);
-                    intent.putExtra("friend", (Parcelable) user.getFriends()[position]);
+                    intent.putExtra("position", position);
                     startActivity(intent);
                 });
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        private void RegistrationContent() {
+            Button button_registration_confirm;
+            EditText edit_text_registration_nickname, edit_text_registration_password;
+
+            disableAll();
+            enable(R.id.content_registration);
+            button_registration_confirm = findViewById(R.id.button_registration_confirm);
+            edit_text_registration_nickname = findViewById(R.id.edit_text_registration_nickname);
+            edit_text_registration_password = findViewById(R.id.edit_text_registration_password);
+
+            button_registration_confirm.setOnClickListener(v -> {
+                try {
+                    DataBase db = new DataBase();
+                    if (!db.add_user(edit_text_registration_nickname.getText().toString(), edit_text_registration_password.getText().toString()))
+                    {
+                        Toast.makeText(getApplicationContext(), "Этот никнейм занят", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        disableAll();
+                        enable(R.id.content_account);
+                    }
+                } catch (InterruptedException | SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            assert data != null;
-            user = data.getParcelableExtra("user");
-        }
-    }*/
-
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
@@ -410,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        new AccountContent();
+        new AccountContent().execute();
         disableAll();
         enable(R.id.content_account);
 
@@ -437,20 +347,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item)
-    {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         disableAll();
-        switch (id)
-        {
+        switch (id) {
             case R.id.nav_account:
                 enable(R.id.content_account);
                 toolbar.setTitle(R.string.menu_account);
@@ -469,6 +376,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);
+        if (user != null)
+            notify_user_changed();
         return true;
     }
 }

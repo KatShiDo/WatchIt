@@ -1,20 +1,18 @@
 package com.example.watchit;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+import com.example.watchit.utils.BitmapCompressor;
+
 import java.util.HashMap;
 
-public class Title implements Parcelable
-{
+public class Title implements Parcelable {
     private Bitmap image;
     private String caption, description, year, genre, producer, url;
 
-    public Title(HashMap<String, String> data, Bitmap image)
-    {
+    public Title(HashMap<String, String> data, Bitmap image) {
         this.image = image;
         this.url = data.get("Ссылка");
         this.caption = data.get("Название");

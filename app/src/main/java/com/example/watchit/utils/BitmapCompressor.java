@@ -1,14 +1,10 @@
-package com.example.watchit;
+package com.example.watchit.utils;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 public class BitmapCompressor {
     public static Bitmap compressBitmap(Bitmap bitmap, int recWidth){
-        //BitmapFactory.Options options = new BitmapFactory.Options();
-        //options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        if (bitmap != null)
-        {
+        if (bitmap != null) {
             int imageHeight = bitmap.getHeight();
             int imageWidth = bitmap.getWidth();
             float k = (float) imageWidth/ (float) recWidth;
@@ -16,8 +12,7 @@ public class BitmapCompressor {
             int newHeight = (int) newHeightFloat;
             return Bitmap.createScaledBitmap(bitmap, recWidth, newHeight, false);
         }
-        else
-        {
+        else {
             return null;
         }
     }

@@ -1,24 +1,19 @@
-package com.example.watchit;
+package com.example.watchit.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.SocketException;
-import java.sql.Blob;
+import com.example.watchit.R;
+import com.example.watchit.Title;
+import com.example.watchit.User;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Random;
 
 public class DataBase
 {

@@ -1,4 +1,4 @@
-package com.example.watchit;
+package com.example.watchit.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.watchit.R;
+import com.example.watchit.Title;
 
 public class TitleActivity extends AppCompatActivity
 {
@@ -30,7 +33,16 @@ public class TitleActivity extends AppCompatActivity
         title_producer = findViewById(R.id.title_producer);
         title_url = findViewById(R.id.title_url);
         title_caption.setText(title.getCaption());
-        title_description.setText(title.getDescription());
+        if (title.getDescription().length() > 500)
+        {
+            String desc = title.getDescription().substring(0, 500);
+            desc = desc + "...";
+            title_description.setText(desc);
+        }
+        else
+        {
+            title_description.setText(title.getDescription());
+        }
         title_year.setText(title.getYear());
         title_genre.setText(title.getGenre());
         title_producer.setText(title.getProducer());
