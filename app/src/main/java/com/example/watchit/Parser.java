@@ -104,6 +104,8 @@ public class Parser
                 return getInformationOkko(url);
             case "netflix":
                 return getInformationNetflix(url);
+            case "animego":
+                return getInformationAnimego(url);
             default:
                 return null;
         }
@@ -121,6 +123,8 @@ public class Parser
                 return getBitmapOkko(context);
             case "netflix":
                 return getBitmapNetflix(context);
+            case "animego":
+                return getBitmapAnimego(context);
             default:
                 return null;
         }
@@ -370,6 +374,103 @@ public class Parser
 
             String str = new String(url_string);
             str = str.substring(0, 103);
+
+            final Bitmap[] bitmap = new Bitmap[1];
+            String finalStr = str;
+            Thread thread = new Thread() {
+                public void run()
+                {
+                    bitmap[0] = getBitmapFromURL(finalStr);
+                }
+            };
+            thread.start();
+            thread.join();
+            return bitmap[0];
+        }
+        catch (Exception e)
+        {
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_not_found);
+        }
+    }
+
+    public static HashMap<String, String> getInformationAnimego(String url) {
+        HashMap<String, String> data = new HashMap<>();
+        try
+        {
+            Elements info1 = doc.getElementsByTag("div");
+            Elements info2 = info1.get(0).children();
+            Elements info3 = info2.get(0).children();
+
+            Elements info4 = info3.get(1).children();
+            Elements info5 = info4.get(0).children();
+            Elements info6 = info5.get(0).children();
+
+
+            Elements info7 = info6.get(0).children();
+            Elements info8 = info6.get(1).children();
+            Elements info9 = info8.get(1).children();
+            Elements info10 = info9.get(1).children();
+            Elements info11 = info10.get(1).children();
+            Element title_producer = info11.get(2).children().get(1);
+            Element title_caption = info7.get(0);
+            Element title_year = info8.get(1).children().get(0);
+            Elements title_genre = info7.get(3).children().get(0).children();
+
+            Elements info12 = info5.get(1).children();
+            Element title_description = info12.get(0);
+
+            StringBuilder title_genre_string = new StringBuilder();
+            for (Element genre : title_genre)
+            {
+                title_genre_string.append(genre.text()).append(" ");
+            }
+            data.put("Ссылка", url);
+            data.put("Название", title_caption.text());
+            data.put("Описание", title_description.text());
+            data.put("Год", title_year.text());
+            data.put("Режиссёр", title_producer.text());
+            data.put("Жанр", title_genre_string.toString());
+        }
+        catch (Exception e)
+        {
+            data.put("Ссылка", "Error: couldn't read data from url");
+            data.put("Название", "Error: couldn't read data from url");
+            data.put("Описание", "Error: couldn't read data from url");
+            data.put("Год", "Error: couldn't read data from url");
+            data.put("Режиссёр", "Error: couldn't read data from url");
+            data.put("Жанр", "Error: couldn't read data from url");
+        }
+        return data;
+    }
+
+    public static Bitmap getBitmapAnimego(Context context) {
+        Element title_image = doc.selectFirst("div[class=page__poster img-fit-cover]").children().get(0);
+        try
+        {
+            String text = title_image.toString();
+            int begin = text.indexOf("src") + 5;
+            int end = text.indexOf("alt") - 2;
+            char[] url_string = new char[200];
+            text.getChars(begin, end, url_string, 0);
+
+            url_string = Arrays.copyOf(url_string, url_string.length + 8);
+
+            for (int i = end - begin + 21; i >= 22; i--)
+            {
+                url_string[i] = url_string[i - 22];
+            }
+
+            url_string[0] = 'h'; url_string[1] = 't'; url_string[2] = 't'; url_string[3] = 'p'; url_string[4] = 's'; url_string[5] = ':';
+            url_string[6] = '/'; url_string[7] = '/'; // https://
+
+            url_string[8] = 'a'; url_string[9] = 'n'; url_string[10] = 'i'; url_string[11] = 'm'; url_string[12] = 'e'; url_string[13] = 'g';
+            url_string[14] = 'o'; url_string[15] = '.'; url_string[16] = 'o'; url_string[17] = 'n'; url_string[18] = 'l'; url_string[19] = 'i';
+            url_string[20] = 'n'; url_string[21] = 'e'; //animego.online
+
+
+
+            String str = new String(url_string);
+            str = str.substring(0, 109);
 
             final Bitmap[] bitmap = new Bitmap[1];
             String finalStr = str;
