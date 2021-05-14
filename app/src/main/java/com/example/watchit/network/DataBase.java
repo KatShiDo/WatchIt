@@ -15,8 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
-public class DataBase
-{
+public class DataBase {
     private Connection con;
     private Statement st;
 
@@ -30,8 +29,7 @@ public class DataBase
         st = con.createStatement();
         User[] user = {null};
         Thread user_form = new Thread(() -> {
-            try
-            {
+            try {
                 ResultSet rs;
                 Title[] titles_unwatched = new Title[0];
                 Title[] titles_watched = new Title[0];
@@ -39,17 +37,14 @@ public class DataBase
                         "JOIN Title t ON a.user_nickname = t.user_nickname " +
                         "WHERE a.user_nickname = '" + nickname + "'" );
                 int i = 0, j = 0;
-                while (rs.next())
-                {
-                    if (rs.getBoolean("title_watched"))
-                    {
+                while (rs.next()) {
+                    if (rs.getBoolean("title_watched")) {
                         titles_watched = Arrays.copyOf(titles_watched, titles_watched.length + 1);
                         titles_watched[i] = new Title(Parser.getInformation(rs.getString("title_url")),
                                 Parser.getBitmap(rs.getString("title_url"), context));
                         i++;
                     }
-                    else
-                    {
+                    else {
                         titles_unwatched = Arrays.copyOf(titles_unwatched, titles_unwatched.length + 1);
                         titles_unwatched[j] = new Title(Parser.getInformation(rs.getString("title_url")),
                                 Parser.getBitmap(rs.getString("title_url"), context));
@@ -60,8 +55,7 @@ public class DataBase
                         "WHERE user_nickname = '" + nickname + "'");
                 rs.next();
                 Bitmap avatar;
-                switch (rs.getInt("user_avatar_index"))
-                {
+                switch (rs.getInt("user_avatar_index")) {
                     case 0:
                         avatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.user);
                         break;
@@ -117,15 +111,13 @@ public class DataBase
                         throw new IllegalStateException("Unexpected value: " + rs.getInt("user_avatar_index"));
                 }
                 User[] friends = null;
-                if (!isFriend)
-                {
+                if (!isFriend) {
                     friends = new User[0];
                     Statement st_friends = con.createStatement();
                     ResultSet rs_friends = st_friends.executeQuery("SELECT user_2 FROM Relationship r " +
                             "WHERE r.user_1 = '" + nickname + "'");
                     i = 0;
-                    while (rs_friends.next())
-                    {
+                    while (rs_friends.next()) {
                         friends = Arrays.copyOf(friends, friends.length + 1);
                         friends[i] = form_user(rs_friends.getString("user_2"), true, context);
                         i++;
@@ -133,8 +125,7 @@ public class DataBase
                 }
                 user[0] = new User(nickname, avatar, friends, titles_unwatched, titles_watched);
             }
-            catch (SQLException | InterruptedException throwables)
-            {
+            catch (SQLException | InterruptedException throwables) {
                 throwables.printStackTrace();
             }
         });
@@ -150,19 +141,16 @@ public class DataBase
         st = con.createStatement();
         final User[] user = {null};
         Thread user_log = new Thread(() -> {
-            try
-            {
+            try {
                 ResultSet rs = null;
                 rs = st.executeQuery("SELECT user_password FROM AppUser " +
                         "WHERE user_nickname = '" + nickname + "'");
                 rs.next();
-                if (rs.getString("user_password").equals(password))
-                {
+                if (rs.getString("user_password").equals(password)) {
                     user[0] = form_user(nickname, false, context);
                 }
             }
-            catch (SQLException | InterruptedException throwables)
-            {
+            catch (SQLException | InterruptedException throwables) {
                 throwables.printStackTrace();
             }
         });
@@ -174,32 +162,26 @@ public class DataBase
         return user[0];
     }
 
-    private class DBConnection implements Runnable
-    {
+    private class DBConnection implements Runnable {
         @Override
-        public void run()
-        {
+        public void run() {
             final String MSSQL_DB = "jdbc:jtds:sqlserver://katshido.database.windows.net:1433;databaseName=MS_BD;" +
                     "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;" +
                     "loginTimeout=30;Authentication=ActiveDirectoryIntegrated;testOnBorrow=true;validationQuery=\"select 1\"";
             final String MSSQL_LOGIN = "KatShiDo@katshido";
             final String MSSQL_PASS = "fv7sHEJ9hcs";
 
-            try
-            {
+            try {
                 java.lang.Class.forName("net.sourceforge.jtds.jdbc.Driver");
                 con = null;
-                try
-                {
+                try {
                     con = DriverManager.getConnection(MSSQL_DB, MSSQL_LOGIN, MSSQL_PASS);
                 }
-                catch (SQLException e)
-                {
+                catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
-            catch (ClassNotFoundException e)
-            {
+            catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -212,7 +194,8 @@ public class DataBase
                 st.executeUpdate("INSERT INTO Relationship (user_1, user_2) " +
                         "VALUES ('" + user.getNickname() + "', '" + nickname + "')");
                 st.close();
-            } catch (SQLException throwables) {
+            }
+            catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }).start();
@@ -225,7 +208,8 @@ public class DataBase
                 st.executeUpdate("INSERT INTO Title (title_url, title_watched, user_nickname) " +
                         "VALUES ('" + url + "', '" + isWatched + "', '" + user.getNickname() + "')");
                 st.close();
-            } catch (SQLException throwables) {
+            }
+            catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }).start();
@@ -234,20 +218,20 @@ public class DataBase
     public boolean add_user(String nickname, String password) throws InterruptedException, SQLException {
         st = con.createStatement();
         boolean[] flag = {true};
+
         Thread thread_add_user = new Thread(() -> {
             try {
                 ResultSet rs = st.executeQuery("SELECT * FROM AppUser " +
                         "WHERE user_nickname = '" + nickname + "'");
-                if (rs.next())
-                {
+                if (rs.next()) {
                     flag[0] = false;
                 }
-                else
-                {
-                    st.executeUpdate("INSERT INTO AppUser (user_nickname, user_password) " +
-                            "VALUES ('" + nickname + "', '" + password + "')");
+                else {
+                    st.executeUpdate("INSERT INTO AppUser (user_nickname, user_password, user_avatar_index) " +
+                            "VALUES ('" + nickname + "', '" + password + "', 0)");
                 }
-            } catch (SQLException throwables) {
+            }
+            catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         });
@@ -259,14 +243,29 @@ public class DataBase
         return flag[0];
     }
 
-    public void set_user_avatar(String nickname, int avatar_index) throws SQLException
-    {
+    public void set_user_avatar(String nickname, int avatar_index) throws SQLException {
         st = con.createStatement();
         new Thread(() -> {
             try {
                 st.executeUpdate("UPDATE AppUser SET user_avatar_index = '" + avatar_index + "' " +
                         "WHERE user_nickname = '" + nickname + "'");
+                st.close();
             } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void move_to_watched(String nickname, String url) throws SQLException {
+        st = con.createStatement();
+        new Thread(() -> {
+            try {
+                st.executeUpdate("UPDATE Title SET title_watched = 1 " +
+                        "WHERE title_url = '" + url + "' AND user_nickname = '" + nickname + "'");
+                st.executeUpdate("DELETE FROM Title WHERE user_nickname = '" + nickname + "' AND title_url = '" + url + "'");
+                st.close();
+            }
+            catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }).start();

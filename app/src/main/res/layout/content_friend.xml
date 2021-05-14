@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +27,8 @@
         <ListView
             android:id="@+id/friend_list_view_unwatched"
             android:layout_width="match_parent"
-            android:layout_height="221dp">
+            android:layout_height="210dp"
+            android:layout_marginTop="9dp">
 
         </ListView>
 
@@ -43,7 +44,8 @@
         <ListView
             android:id="@+id/friend_list_view_watched"
             android:layout_width="match_parent"
-            android:layout_height="241dp" />
+            android:layout_height="210dp"
+            android:layout_marginTop="9dp" />
     </LinearLayout>
 
     <ImageView
@@ -64,6 +66,7 @@
         android:id="@+id/friend_nickname"
         android:layout_width="0dp"
         android:layout_height="150dp"
+        android:layout_marginRight="10dp"
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="24sp"

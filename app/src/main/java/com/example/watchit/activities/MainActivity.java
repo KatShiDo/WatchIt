@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         findViewById(R.id.choose_avatar).setVisibility(View.INVISIBLE);
     }
 
-    private void enable(int id)
-    {
+    private void enable(int id) {
         findViewById(id).setVisibility(View.VISIBLE);
     }
 
@@ -236,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 list_view_unwatched.setOnItemClickListener((parent, view, position, id) -> {
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getUnwatched()[position]);
+                    intent.putExtra("isWatched", false);
                     startActivity(intent);
                 });
             }
@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 list_view_watched.setOnItemClickListener((parent, view, position, id) -> {
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getWatched()[position]);
+                    intent.putExtra("isWatched", true);
                     startActivity(intent);
                 });
             }

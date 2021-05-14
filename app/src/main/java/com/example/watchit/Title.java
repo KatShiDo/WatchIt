@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.watchit.utils.BitmapCompressor;
-
 import java.util.HashMap;
 
 public class Title implements Parcelable {
@@ -44,38 +42,31 @@ public class Title implements Parcelable {
         }
     };
 
-    public String getCaption()
-    {
+    public String getCaption() {
         return this.caption;
     }
 
-    public Bitmap getImage()
-    {
+    public Bitmap getImage() {
         return this.image;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return this.description;
     }
 
-    public String getYear()
-    {
+    public String getYear() {
         return this.year;
     }
 
-    public String getGenre()
-    {
+    public String getGenre() {
         return this.genre;
     }
 
-    public String getProducer()
-    {
+    public String getProducer() {
         return this.producer;
     }
 
-    public String getUrl()
-    {
+    public String getUrl() {
         return this.url;
     }
 
@@ -86,12 +77,7 @@ public class Title implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        Bitmap image_compressed = BitmapCompressor.compressBitmap(image, 150);
-        /*int width = image.getWidth();
-        int height = image.getHeight();
-        int halfWidth = width / 2;
-        int halfHeight = height / 2;
-        image = Bitmap.createScaledBitmap(image, halfWidth, halfHeight, false);*/
+        Bitmap image_compressed = compressBitmap(image, 150);
         dest.writeParcelable(image_compressed, flags);
         dest.writeString(caption);
         dest.writeString(description);
@@ -99,5 +85,19 @@ public class Title implements Parcelable {
         dest.writeString(genre);
         dest.writeString(producer);
         dest.writeString(url);
+    }
+
+    public Bitmap compressBitmap(Bitmap bitmap, int recWidth){
+        if (bitmap != null) {
+            int imageHeight = bitmap.getHeight();
+            int imageWidth = bitmap.getWidth();
+            float k = (float) imageWidth/ (float) recWidth;
+            float newHeightFloat = ((float) imageHeight/k);
+            int newHeight = (int) newHeightFloat;
+            return Bitmap.createScaledBitmap(bitmap, recWidth, newHeight, false);
+        }
+        else {
+            return null;
+        }
     }
 }

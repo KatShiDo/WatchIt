@@ -1,12 +1,7 @@
 package com.example.watchit;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import com.example.watchit.utils.BitmapCompressor;
-
-import java.io.Serializable;
 import java.util.Arrays;
 
 public class User {
