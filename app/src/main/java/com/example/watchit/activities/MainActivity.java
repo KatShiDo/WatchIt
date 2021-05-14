@@ -236,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getUnwatched()[position]);
                     intent.putExtra("isWatched", false);
+                    intent.putExtra("isFriend", false);
                     startActivity(intent);
                 });
             }
@@ -252,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Intent intent = new Intent(MainActivity.this, TitleActivity.class);
                     intent.putExtra("title", user.getWatched()[position]);
                     intent.putExtra("isWatched", true);
+                    intent.putExtra("isFriend", false);
                     startActivity(intent);
                 });
             }

@@ -52,6 +52,7 @@ public class FriendActivity extends AppCompatActivity
         {
             Intent intent = new Intent(FriendActivity.this, TitleActivity.class);
             intent.putExtra("title", user.getUnwatched()[position]);
+            intent.putExtra("isFriend", true);
             startActivity(intent);
         });
     }
@@ -64,6 +65,7 @@ public class FriendActivity extends AppCompatActivity
         {
             Intent intent = new Intent(FriendActivity.this, TitleActivity.class);
             intent.putExtra("title", user.getWatched()[position]);
+            intent.putExtra("isFriend", true);
             startActivity(intent);
         });
     }

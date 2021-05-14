@@ -19,7 +19,7 @@ import static com.example.watchit.activities.MainActivity.user;
 
 public class TitleActivity extends AppCompatActivity
 {
-    boolean isWatched;
+    boolean isWatched, isFriend;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +27,17 @@ public class TitleActivity extends AppCompatActivity
         Intent intent = getIntent();
         Title title = intent.getParcelableExtra("title");
         isWatched = intent.getBooleanExtra("isWatched", false);
+        isFriend = intent.getBooleanExtra("isFriend", true);
         fillInformation(title);
     }
 
     private void fillInformation(Title title)
     {
         Button button_move_to_watched = findViewById(R.id.button_move_to_watched);
+        if (isFriend)
+        {
+            button_move_to_watched.setVisibility(View.INVISIBLE);
+        }
         if (isWatched)
         {
             button_move_to_watched.setEnabled(false);
