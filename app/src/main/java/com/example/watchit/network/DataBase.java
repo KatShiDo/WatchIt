@@ -262,7 +262,6 @@ public class DataBase {
             try {
                 st.executeUpdate("UPDATE Title SET title_watched = 1 " +
                         "WHERE title_url = '" + url + "' AND user_nickname = '" + nickname + "'");
-                st.executeUpdate("DELETE FROM Title WHERE user_nickname = '" + nickname + "' AND title_url = '" + url + "'");
                 st.close();
             }
             catch (SQLException throwables) {
