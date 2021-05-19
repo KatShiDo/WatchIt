@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,13 +15,11 @@ import com.example.watchit.Title;
 
 import java.sql.SQLException;
 
-public class AddTitleActivity extends AppCompatActivity
-{
+public class AddTitleActivity extends AppCompatActivity {
     Button button_add_title_confirm;
     EditText edit_text_title_url;
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_title);
         Intent intent = getIntent();
@@ -29,8 +28,7 @@ public class AddTitleActivity extends AppCompatActivity
         button_add_title_confirm.setOnClickListener(v -> {
             try {
                 DataBase db;
-                switch (intent.getIntExtra("category", -1))
-                {
+                switch (intent.getIntExtra("category", -1)) {
                     case 0:
                         MainActivity.user.addUnwatched(new Title(Parser.getInformation(edit_text_title_url.getText().toString()),
                                 Parser.getBitmap(edit_text_title_url.getText().toString(), this)));
@@ -45,9 +43,11 @@ public class AddTitleActivity extends AppCompatActivity
                         break;
                 }
             }
-            catch (InterruptedException | SQLException e)
-            {
+            catch (InterruptedException | SQLException e) {
                 e.printStackTrace();
+            }
+            catch (IllegalArgumentException e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
             finish();
         });

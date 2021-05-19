@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 if (user != null) {
                     formLists();
-                    Toast.makeText(getApplicationContext(), "Успешный вход", Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(), "Успешный вход", Toast.LENGTH_LONG).show();
                     button_login.setEnabled(false);
                     button_start_registration.setEnabled(false);
                     edit_text_login.setEnabled(false);
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navigationView.getMenu().findItem(R.id.nav_watched).setEnabled(true);
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "Неверный логин или пароль", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "Неверный логин или пароль", Toast.LENGTH_LONG).show();
                 }
             });
 

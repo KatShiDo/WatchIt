@@ -94,7 +94,7 @@ public class Parser {
         }
     }
 
-    public static HashMap<String, String> getInformation(String url) throws InterruptedException {
+    public static HashMap<String, String> getInformation(String url) throws InterruptedException, IllegalArgumentException {
         init(url);
         switch (get_domain(url)) {
 
@@ -102,7 +102,7 @@ public class Parser {
                 return getInformationKinopoisk(url);
             case "okko.tv":
                 return getInformationOkko(url);
-            /*case "netflix":
+            /*case "netflix.com":
                 return getInformationNetflix(url);*/
             case "animego.online":
                 return getInformationAnimegoOnline(url);
@@ -116,14 +116,18 @@ public class Parser {
                 return getInformationWink(url);
             case "wakanim.tv":
                 return getInformationWakanim(url);
+            case "tv.apple":
+                return getInformationApple(url);
+            case "ivi.ru":
+                return getInformationIvi(url);
             default:
-                return null;
+                throw new IllegalArgumentException("Этот сайт не поддерживается");
         }
     }
 
 
 
-    public static Bitmap getBitmap(String url, Context context) throws InterruptedException {
+    public static Bitmap getBitmap(String url, Context context) throws InterruptedException, IllegalArgumentException {
         init(url);
         switch (get_domain(url)) {
 
@@ -145,8 +149,12 @@ public class Parser {
                 return getBitmapWink(context);
             case "wakanim.tv":
                 return getBitmapWakanim(context);
+            case "tv.apple":
+                return getBitmapApple(context);
+            case "ivi.ru":
+                return getBitmapIvi(context);
             default:
-                return null;
+                throw new IllegalArgumentException("Этот сайт не поддерживается");
         }
     }
 
@@ -251,7 +259,12 @@ public class Parser {
                 title_information = info6.get(1).children().get(3).children();
             else
                 title_information = info6.get(1).children().get(2).children();
-            Elements info_description1 = info4.get(2).children();
+
+            Elements info_description1;
+            if (info4.size() == 5)
+                info_description1 = info4.get(2).children();
+            else
+                info_description1 = info4.get(3).children();
             Elements info_description2 = info_description1.get(0).children();
             Elements info_description3 = info_description2.get(0).children();
             Elements info_description4 = info_description3.get(0).children();
@@ -881,5 +894,150 @@ public class Parser {
         catch (Exception e) {
             return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_not_found);
         }
+    }
+
+    public static HashMap<String, String> getInformationApple(String url) {
+        HashMap<String, String> data = new HashMap<>();
+        try {
+            Elements info2 = doc.getElementsByTag("main").get(0).children();
+            Elements info4 = info2.get(1).children();
+            Elements info5 = info4.get(0).children();
+
+            Element title_caption = info5.get(2);
+
+            Elements info6 = info5.get(3).children();
+            Elements info7 = info6.get(0).children();
+
+            Element title_producer = info7.get(3).children().get(1).children().get(1);
+
+            Elements info8 = info7.get(2).children();
+
+            Element title_description = info8.get(0).children().get(0);
+
+            Elements info9 = info8.get(1).children();
+            Elements info10 = info9.get(0).children();
+
+
+            Element title_genre = info10.get(0);
+            Element title_year = info10.get(1);
+
+            data.put("Ссылка", url);
+            data.put("Название", title_caption.text());
+            data.put("Описание", title_description.text());
+            data.put("Год", title_year.text());
+            data.put("Режиссёр", title_producer.text());
+            data.put("Жанр", title_genre.text());
+        }
+        catch (Exception e) {
+            data.put("Ссылка", url);
+            data.put("Название", "Error: couldn't read data from url");
+            data.put("Описание", "Error: couldn't read data from url");
+            data.put("Год", "Error: couldn't read data from url");
+            data.put("Режиссёр", "Error: couldn't read data from url");
+            data.put("Жанр", "Error: couldn't read data from url");
+        }
+        return data;
+    }
+
+    public static Bitmap getBitmapApple(Context context) {
+        Element title_image = doc.selectFirst("img[class=media-artwork-v2__image]");
+        try {
+            String text = title_image.toString();
+            int begin = text.indexOf("srcset") + 8;
+            int end = text.indexOf("1000w") - 1;
+            char[] url_string = new char[1000];
+            text.getChars(begin, end, url_string, 0);
+
+            String str = new String(url_string);
+
+            final Bitmap[] bitmap = new Bitmap[1];
+            Thread thread = new Thread() {
+                public void run()
+                {
+                    bitmap[0] = getBitmapFromURL(str);
+                }
+            };
+            thread.start();
+            thread.join();
+            return bitmap[0];
+        }
+        catch (Exception e) {
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_not_found);
+        }
+    }
+
+    public static HashMap<String, String> getInformationIvi(String url) {
+        HashMap<String, String> data = new HashMap<>();
+        try {
+            Elements info1 = doc.selectFirst("div[id=root]").children();
+            //Elements info2 = info1.get(0).children();
+
+            Element title_caption = info1.get(0).children().get(0).children().get(0).children().get(0).children().get(0)
+                    .children().get(0).children().last().children().get(0);
+
+            Elements info3 = info1.get(1).children();
+            Elements info4 = info3.get(0).children();
+            Elements info5 = info4.get(0).children();
+            Elements info6 = info5.get(0).children();
+
+            Element title_year = info6.get(1).children().get(0).children().get(0);
+            Elements title_genre = info6.get(1).children().get(0).children();
+
+            int i = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Element genre : title_genre) {
+                if (i >= 2) {
+                    stringBuilder.append(genre.text()).append(" ");
+                }
+                else {
+                    i++;
+                }
+            }
+            String title_genre_string = stringBuilder.toString();
+
+            Element title_description = info6.last().children().get(1).children().get(0).children().get(0)
+                    .children().get(0).children().get(0);
+
+            Elements title_producer;
+
+            try {
+                 title_producer = info1.get(2).children().get(0).children().get(0).children().get(1)
+                        .children().get(1).children().get(0).children().get(0).children().get(0).children().get(0).children().get(0)
+                        .children().get(1).children();
+            }
+            catch (Exception e) {
+                title_producer = info1.get(3).children().get(0).children().get(0).children().get(1)
+                        .children().get(1).children().get(0).children().get(0).children().get(0).children().get(0).children().get(0)
+                        .children().get(1).children();
+            }
+
+            stringBuilder = new StringBuilder();
+
+            for (int j = 0; j < title_producer.size() - 1; j++) {
+                stringBuilder.append(title_producer.get(i).text()).append(" ");
+            }
+
+            String title_producer_string = stringBuilder.toString();
+
+            data.put("Ссылка", url);
+            data.put("Название", title_caption.text());
+            data.put("Описание", title_description.text());
+            data.put("Год", title_year.text());
+            data.put("Режиссёр", title_producer_string);
+            data.put("Жанр", title_genre_string);
+        }
+        catch (Exception e) {
+            data.put("Ссылка", url);
+            data.put("Название", "Error: couldn't read data from url");
+            data.put("Описание", "Error: couldn't read data from url");
+            data.put("Год", "Error: couldn't read data from url");
+            data.put("Режиссёр", "Error: couldn't read data from url");
+            data.put("Жанр", "Error: couldn't read data from url");
+        }
+        return data;
+    }
+
+    public static Bitmap getBitmapIvi(Context context) {
+        return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_not_found);
     }
 }
